@@ -9,7 +9,7 @@ Python microservice for `Violence` / `Non-violence` recognition.
 	- Run MoViNet PyTorch if `video_path` is available.
 	- Fallback heuristic if the model or video is unavailable.
 - Fetch threshold values from `pattern-service` (`/api/patterns/thresholds`).
-- Notebook fine-tune MoViNet: `movinet_finetuning_pytorch.ipynb`.
+- Notebook fine-tune MoViNet: `movinet_finetuning.ipynb`.
 
 ## Main Files
 
@@ -59,7 +59,7 @@ curl -X POST http://localhost:8000/api/ai/infer \
 
 ## Fine-tuning Notebook
 
-Notebook: `movinet_finetuning_pytorch.ipynb`
+Notebook: `movinet_finetuning.ipynb`
 
 The notebook will:
 
