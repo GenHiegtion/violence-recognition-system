@@ -1,25 +1,24 @@
 # AI Inference Service (PyTorch MoViNet)
 
-Python microservice cho nhận diện `Violence` / `Non-violence`.
+Python microservice for `Violence` / `Non-violence` recognition.
 
 ## Features
 
-- Endpoint tách riêng trong `endpoints.py` (khong dat trong `main.py`).
-- `POST /api/ai/infer` ho tro 3 che do tinh diem:
-	- Nhan `violence_score` tu request.
-	- Chay MoViNet PyTorch neu co `video_path`.
-	- Fallback heuristic neu model/chieu video khong san sang.
-- Lay threshold tu `pattern-service` (`/api/patterns/thresholds`).
+- `POST /api/ai/infer` supports 3 scoring modes:
+	- Receive `violence_score` from request.
+	- Run MoViNet PyTorch if `video_path` is available.
+	- Fallback heuristic if the model or video is unavailable.
+- Fetch threshold values from `pattern-service` (`/api/patterns/thresholds`).
 - Notebook fine-tune MoViNet: `movinet_finetuning_pytorch.ipynb`.
 
-## Files Chinh
+## Main Files
 
-- `main.py`: khoi tao FastAPI app va include router.
-- `endpoints.py`: dinh nghia API endpoints.
+- `main.py`: initialize the FastAPI app and include the router.
+- `endpoints.py`: define API endpoints.
 - `model_inference.py`: loader + infer MoViNet PyTorch.
-- `pattern_client.py`: goi threshold tu pattern-service.
+- `pattern_client.py`: call threshold API from pattern-service.
 - `schemas.py`: request/response models.
-- `settings.py`: doc bien moi truong.
+- `settings.py`: read environment variables.
 
 ## Run Locally
 
@@ -28,7 +27,7 @@ uv sync
 uv run main.py
 ```
 
-Hoac:
+Or:
 
 ```bash
 uv sync
@@ -52,18 +51,18 @@ curl -X POST http://localhost:8000/api/ai/infer \
 
 - `PATTERN_SERVICE_URL` (default: `http://localhost:8081`)
 - `DEFAULT_VIOLENCE_THRESHOLD` (default: `0.60`)
-- `MOVINET_CHECKPOINT_PATH` (default: `ai-service/movinet_a0_violence.pt`)
+- `MOVINET_CHECKPOINT_PATH` (default: `ai-service/weights/movinet_a0_violence.pt`)
 - `MOVINET_MODEL_NAME` (default: `A0`)
 - `MOVINET_IMAGE_SIZE` (default: `172`)
 - `MOVINET_NUM_FRAMES` (default: `32`)
-- `MOVINET_DEVICE` (default: `auto`, tu chon `cpu`/`cuda`/`mps`)
+- `MOVINET_DEVICE` (default: `auto`, selectable: `cpu`/`cuda`/`mps`)
 
 ## Fine-tuning Notebook
 
 Notebook: `movinet_finetuning_pytorch.ipynb`
 
-Notebook se:
+The notebook will:
 
-- Doc dataset tu `real-life-violence-dataset/Violence` va `real-life-violence-dataset/NonViolence`.
-- Fine-tune MoViNet A0 bang PyTorch 2.6.0.
-- Luu checkpoint sang `movinet_a0_violence.pt` de AI service dung lai khi infer.
+- Read the dataset from `real-life-violence-dataset/Violence` and `real-life-violence-dataset/NonViolence`.
+- Fine-tune MoViNet A0 with PyTorch 2.6.0.
+- Save checkpoint to `weights/movinet_a0_violence.pt` for reuse during inference.
