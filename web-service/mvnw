@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v mvn >/dev/null 2>&1; then
+  exec mvn "$@"
+fi
+
+MAVEN_VERSION="${MAVEN_VERSION:-3.9.9}"
+CACHE_DIR="${HOME}/.cache/maven"
+MAVEN_DIR="${CACHE_DIR}/apache-maven-${MAVEN_VERSION}"
+MAVEN_BIN="${MAVEN_DIR}/bin/mvn"
+ARCHIVE_PATH="${CACHE_DIR}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+DOWNLOAD_URL="${MAVEN_DOWNLOAD_URL:-https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/apache-maven-${MAVEN_VERSION}-bin.tar.gz}"
+
+if [[ ! -x "$MAVEN_BIN" ]]; then
+  mkdir -p "$CACHE_DIR"
+  echo "Maven not found locally. Downloading Maven ${MAVEN_VERSION}..."
+
+  if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
+    echo "Neither curl nor wget is available to download Maven."
+    exit 1
+  fi
+
+  rm -f "$ARCHIVE_PATH"
+  echo "Downloading Maven from: $DOWNLOAD_URL"
+  if command -v curl >/dev/null 2>&1; then
+    if ! curl -fsSL "$DOWNLOAD_URL" -o "$ARCHIVE_PATH"; then
+      echo "Failed to download Maven from $DOWNLOAD_URL"
+      exit 1
+    fi
+  else
+    if ! wget -qO "$ARCHIVE_PATH" "$DOWNLOAD_URL"; then
+      echo "Failed to download Maven from $DOWNLOAD_URL"
+      exit 1
+    fi
+  fi
+
+  tar -xzf "$ARCHIVE_PATH" -C "$CACHE_DIR"
+fi
+
+exec "$MAVEN_BIN" "$@"
