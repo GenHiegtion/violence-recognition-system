@@ -1,8 +1,8 @@
 package com.vrs.pattern.controller;
 
-import com.vrs.pattern.model.PatternRequest;
-import com.vrs.pattern.model.PatternResponse;
-import com.vrs.pattern.service.PatternManagementService;
+import com.vrs.pattern.dto.request.VioPatternRequest;
+import com.vrs.pattern.dto.response.VioPatternResponse;
+import com.vrs.pattern.service.VioPatternService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -20,43 +20,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/patterns")
-public class PatternController {
+public class VioPatternController {
 
-    private final PatternManagementService service;
+    private final VioPatternService vioPatternService;
 
-    public PatternController(PatternManagementService service) {
-        this.service = service;
+    public VioPatternController(VioPatternService vioPatternService) {
+        this.vioPatternService = vioPatternService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PatternResponse create(@Valid @RequestBody PatternRequest request) {
-        return service.create(request);
+    public VioPatternResponse create(@Valid @RequestBody VioPatternRequest request) {
+        return vioPatternService.create(request);
     }
 
     @GetMapping
-    public List<PatternResponse> list() {
-        return service.list();
+    public List<VioPatternResponse> list() {
+        return vioPatternService.list();
     }
 
     @GetMapping("/thresholds")
     public Map<String, Double> activeThresholds() {
-        return service.activeThresholds();
+        return vioPatternService.activeThresholds();
     }
 
     @GetMapping("/{id}")
-    public PatternResponse findById(@PathVariable long id) {
-        return service.findById(id);
+    public VioPatternResponse findById(@PathVariable long id) {
+        return vioPatternService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public PatternResponse update(@PathVariable long id, @Valid @RequestBody PatternRequest request) {
-        return service.update(id, request);
+    public VioPatternResponse update(@PathVariable long id, @Valid @RequestBody VioPatternRequest request) {
+        return vioPatternService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        service.delete(id);
+        vioPatternService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
