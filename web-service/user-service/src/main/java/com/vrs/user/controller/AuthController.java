@@ -1,12 +1,12 @@
 package com.vrs.user.controller;
 
-import com.vrs.user.model.AuthResponse;
-import com.vrs.user.model.LoginRequest;
-import com.vrs.user.model.RegisterRequest;
+import com.vrs.user.dto.request.LoginRequest;
+import com.vrs.user.dto.request.RegisterRequest;
+import com.vrs.user.dto.response.AuthResponse;
+import com.vrs.user.dto.response.UserResponse;
 import com.vrs.user.model.User;
-import com.vrs.user.model.UserResponse;
 import com.vrs.user.service.AuthTokenService;
-import com.vrs.user.service.UserAccountService;
+import com.vrs.user.service.UserService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -23,28 +23,33 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserAccountService userAccountService;
+    private final UserService userService;
     private final AuthTokenService authTokenService;
 
-    public AuthController(UserAccountService userAccountService, AuthTokenService authTokenService) {
-        this.userAccountService = userAccountService;
+    public AuthController(UserService userService, AuthTokenService authTokenService) {
+        this.userService = userService;
         this.authTokenService = authTokenService;
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
-        return userAccountService.register(request);
+        return userService.register(request);
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        User account = userAccountService.authenticate(request.username(), request.password())
+        User account = userService.authenticate(request.getUsername(), request.getPassword())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
         String token = authTokenService.issueToken(account);
-        UserResponse user = userAccountService.toUserResponse(account);
-        return new AuthResponse(token, "Bearer", LocalDateTime.now(), user);
+        UserResponse user = userService.toUserResponse(account);
+        return AuthResponse.builder()
+            .token(token)
+            .tokenType("Bearer")
+            .issuedAt(LocalDateTime.now())
+            .user(user)
+            .build();
     }
 
     @PostMapping("/logout")

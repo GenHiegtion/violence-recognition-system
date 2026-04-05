@@ -16,13 +16,13 @@ public class AuthTokenService {
 
     public String issueToken(User account) {
         String token = UUID.randomUUID().toString();
-        SessionInfo session = new SessionInfo(
-                token,
-                account.getId(),
-                account.getUsername(),
-                account.getRole(),
-                LocalDateTime.now()
-        );
+        SessionInfo session = SessionInfo.builder()
+            .token(token)
+            .userId(account.getId())
+            .username(account.getUsername())
+            .role(account.getRole())
+            .createdAt(LocalDateTime.now())
+            .build();
         sessions.put(token, session);
         return token;
     }
