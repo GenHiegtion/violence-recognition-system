@@ -1,11 +1,13 @@
 package com.vrs.pattern.controller;
 
 import com.vrs.pattern.dto.request.VioPatternRequest;
+import com.vrs.pattern.dto.response.PatternFileUploadResponse;
 import com.vrs.pattern.dto.response.VioPatternResponse;
 import com.vrs.pattern.service.VioPatternService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/patterns")
@@ -32,6 +36,13 @@ public class VioPatternController {
     @ResponseStatus(HttpStatus.CREATED)
     public VioPatternResponse create(@Valid @RequestBody VioPatternRequest request) {
         return vioPatternService.create(request);
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public PatternFileUploadResponse upload(@RequestParam("file") MultipartFile file) {
+        String storedPath = vioPatternService.uploadFile(file);
+        return PatternFileUploadResponse.builder().path(storedPath).build();
     }
 
     @GetMapping

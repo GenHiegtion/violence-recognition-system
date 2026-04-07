@@ -4,6 +4,7 @@ import com.vrs.pattern.dto.request.VioPatternRequest;
 import com.vrs.pattern.dto.response.VioPatternResponse;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface VioPatternService {
 
@@ -18,4 +19,6 @@ public interface VioPatternService {
     VioPatternResponse update(long id, VioPatternRequest request);
 
     void delete(long id);
+
+    String uploadFile(MultipartFile file);
 }

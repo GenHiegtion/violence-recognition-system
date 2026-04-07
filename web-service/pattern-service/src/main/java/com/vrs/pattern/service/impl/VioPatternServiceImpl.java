@@ -5,21 +5,34 @@ import com.vrs.pattern.dto.response.VioPatternResponse;
 import com.vrs.pattern.model.VioPattern;
 import com.vrs.pattern.repository.VioPatternRepository;
 import com.vrs.pattern.service.VioPatternService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class VioPatternServiceImpl implements VioPatternService {
 
     private final VioPatternRepository repository;
+    private final Path uploadRoot;
 
-    public VioPatternServiceImpl(VioPatternRepository repository) {
+    public VioPatternServiceImpl(
+            VioPatternRepository repository,
+            @Value("${app.upload-dir:${user.dir}/../../uploads/patterns}") String uploadDir
+    ) {
         this.repository = repository;
+        this.uploadRoot = Paths.get(uploadDir).normalize().toAbsolutePath();
     }
 
     @Override
@@ -77,6 +90,33 @@ public class VioPatternServiceImpl implements VioPatternService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pattern not found");
         }
         repository.deleteById(id);
+    }
+
+    @Override
+    public String uploadFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File is required");
+        }
+
+        String originalName = file.getOriginalFilename();
+        if (originalName == null || originalName.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file name");
+        }
+
+        String safeName = Paths.get(originalName).getFileName().toString().replaceAll("[^a-zA-Z0-9._-]", "_");
+        String storedName = UUID.randomUUID() + "_" + safeName;
+
+        try {
+            Files.createDirectories(uploadRoot);
+            Path target = uploadRoot.resolve(storedName).normalize();
+            if (!target.startsWith(uploadRoot)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file path");
+            }
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            return "uploads/patterns/" + storedName;
+        } catch (IOException ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to store file");
+        }
     }
 
     @Override

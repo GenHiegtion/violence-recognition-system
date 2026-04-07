@@ -6,6 +6,10 @@ spring:
     import: optional:file:${user.dir}/../../.env[.properties]
   application:
     name: pattern-service
+  servlet:
+    multipart:
+      max-file-size: ${PATTERN_MAX_UPLOAD_SIZE:200MB}
+      max-request-size: ${PATTERN_MAX_UPLOAD_SIZE:200MB}
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/vrs_pattern?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USERNAME}
@@ -26,3 +30,6 @@ management:
   endpoint:
     health:
       show-details: always
+
+app:
+  upload-dir: ${PATTERN_UPLOAD_DIR:${user.dir}/../../uploads/patterns}
