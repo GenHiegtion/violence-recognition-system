@@ -1,9 +1,9 @@
 package com.vrs.ingestion.controller;
 
-import com.vrs.ingestion.model.IngestionResponse;
+import com.vrs.ingestion.dto.request.StreamIngestionRequest;
+import com.vrs.ingestion.dto.response.IngestionResponse;
+import com.vrs.ingestion.dto.response.RecognitionResponse;
 import com.vrs.ingestion.model.Model;
-import com.vrs.ingestion.model.RecognitionResponse;
-import com.vrs.ingestion.model.StreamIngestionRequest;
 import com.vrs.ingestion.service.IngestionService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

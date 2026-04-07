@@ -1,10 +1,10 @@
 package com.vrs.user.controller;
 
 import com.vrs.user.config.AuthInterceptor;
+import com.vrs.user.dto.response.UserResponse;
 import com.vrs.user.model.Role;
 import com.vrs.user.model.SessionInfo;
-import com.vrs.user.model.UserResponse;
-import com.vrs.user.service.UserAccountService;
+import com.vrs.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,26 +17,26 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserAccountService userAccountService;
+    private final UserService userService;
 
-    public UserController(UserAccountService userAccountService) {
-        this.userAccountService = userAccountService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/me")
     public UserResponse me(HttpServletRequest request) {
         SessionInfo session = requiredSession(request);
-        return userAccountService.findByUsername(session.username())
+        return userService.findByUsername(session.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @GetMapping
     public List<UserResponse> list(HttpServletRequest request) {
         SessionInfo session = requiredSession(request);
-        if (session.role() != Role.ADMIN) {
+        if (session.getRole() != Role.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin role required");
         }
-        return userAccountService.listUsers();
+        return userService.listUsers();
     }
 
     private SessionInfo requiredSession(HttpServletRequest request) {

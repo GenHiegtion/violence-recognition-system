@@ -5,7 +5,7 @@ This folder contains non-AI microservices implemented with Spring Boot:
 - `api-gateway` (Spring Cloud Gateway)
 - `pattern-service` (violence pattern management + confidence threshold)
 - `video-ingestion-service` (stream/file ingestion and frame extraction simulation)
-- `user-service` (register, login, logout, USER/ADMIN authorization)
+- `user-service` (register, login, logout, MEMBER/ADMIN authorization)
 
 ## Routing Map
 

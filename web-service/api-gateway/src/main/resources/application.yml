@@ -11,18 +11,52 @@ spring:
           uri: ${PATTERN_SERVICE_URL:http://localhost:8081}
           predicates:
             - Path=/api/patterns/**
+        - id: pattern-service-uploads
+          uri: ${PATTERN_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/uploads/**
+        - id: docs-pattern-service
+          uri: ${PATTERN_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/docs/pattern/**
+          filters:
+            - RewritePath=/docs/pattern/?(?<segment>.*), /${segment}
         - id: video-ingestion-service
           uri: ${VIDEO_INGESTION_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/api/ingestion/**
+        - id: docs-video-ingestion-service
+          uri: ${VIDEO_INGESTION_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/docs/ingestion/**
+          filters:
+            - RewritePath=/docs/ingestion/?(?<segment>.*), /${segment}
         - id: user-service
           uri: ${USER_SERVICE_URL:http://localhost:8083}
           predicates:
             - Path=/api/auth/**,/api/users/**
+        - id: docs-user-service
+          uri: ${USER_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/docs/user/**
+          filters:
+            - RewritePath=/docs/user/?(?<segment>.*), /${segment}
         - id: ai-inference-service
           uri: ${AI_SERVICE_URL:http://localhost:8000}
           predicates:
             - Path=/api/ai/**,/health/ai
+
+springdoc:
+  swagger-ui:
+    path: /api-docs
+    disable-swagger-default-url: true
+    urls:
+      - name: Pattern Service
+        url: /docs/pattern/v3/api-docs
+      - name: Video Ingestion Service
+        url: /docs/ingestion/v3/api-docs
+      - name: User Service
+        url: /docs/user/v3/api-docs
 
 management:
   endpoints:
