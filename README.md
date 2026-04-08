@@ -15,9 +15,12 @@ This repository is organized as a microservice system with two groups:
 - `pattern-service`
   - Manages `VioPattern` entity and confidence thresholds.
   - Exposes active thresholds consumed by AI inference.
-- `video-ingestion-service`
-  - Accepts uploaded video files or stream URLs.
-  - Creates `Recognition` records and tracks related `Model` data.
+- `model-service`
+  - Manages model catalog (`name`, `pt`) used for inference.
+  - Syncs model entries from AI weight files.
+- `recognition-service`
+  - Executes recognition by calling AI service with selected model.
+  - Handles video upload and persists `Recognition` results.
 - `user-service`
   - Handles register, login, logout, and role-based access.
   - Persists `User` entity in DB and uses in-memory auth sessions.
@@ -29,8 +32,9 @@ This repository is organized as a microservice system with two groups:
 
 - API Gateway: `8080`
 - Pattern Service: `8081`
-- Video Ingestion Service: `8082`
 - User Service: `8083`
+- Model Service: `8084`
+- Recognition Service: `8085`
 - AI Service: `8000`
 
 ### 1.3 Request Flow
@@ -38,7 +42,8 @@ This repository is organized as a microservice system with two groups:
 1. Client calls the gateway on port `8080`.
 2. Gateway routes by path:
    - `/api/patterns/**` -> pattern-service
-   - `/api/ingestion/**` -> video-ingestion-service
+  - `/api/models/**` -> model-service
+  - `/api/recognitions/**` -> recognition-service
    - `/api/auth/**`, `/api/users/**` -> user-service
    - `/api/ai/**`, `/health/ai` -> ai-service
 3. During inference, ai-service calls `pattern-service /api/patterns/thresholds`.
@@ -57,8 +62,9 @@ violence-recognition-system/
     run.sh
     mvnw
     api-gateway/
+    model-service/
     pattern-service/
-    video-ingestion-service/
+    recognition-service/
     user-service/
   start.sh
   README.md
@@ -71,18 +77,20 @@ violence-recognition-system/
 - Parent POM: `web-service/pom.xml`
 - Modules:
   - `web-service/api-gateway`
+  - `web-service/model-service`
   - `web-service/pattern-service`
-  - `web-service/video-ingestion-service`
+  - `web-service/recognition-service`
   - `web-service/user-service`
 
 ### 3.2 API Gateway Routing
 
 Primary file: `web-service/api-gateway/src/main/resources/application.yml`
 
-- Routes to pattern, ingestion, user, and AI services.
+- Routes to pattern, model, recognition, user, and AI services.
 - Supports URL overrides through environment variables:
   - `PATTERN_SERVICE_URL`
-  - `VIDEO_INGESTION_SERVICE_URL`
+  - `MODEL_SERVICE_URL`
+  - `RECOGNITION_SERVICE_URL`
   - `USER_SERVICE_URL`
   - `AI_SERVICE_URL`
 
@@ -100,29 +108,33 @@ Features:
 - Active threshold export for AI (`GET /api/patterns/thresholds`)
 - UML fields: `id`, `name`, `sevLevel`, `threshold`, `file`
 
-### 3.4 Video Ingestion Service
+### 3.5 Model Service
 
 Main files:
 
-- `web-service/video-ingestion-service/src/main/java/com/vrs/ingestion/controller/IngestionController.java`
-- `web-service/video-ingestion-service/src/main/java/com/vrs/ingestion/service/IngestionService.java`
+- `web-service/model-service/src/main/java/com/vrs/model/controller/ModelController.java`
+- `web-service/model-service/src/main/java/com/vrs/model/service/ModelCatalogService.java`
 
 Features:
 
-- `POST /api/ingestion/upload` (multipart)
-- `POST /api/ingestion/stream` (JSON)
-- `GET /api/ingestion/jobs`
-- `GET /api/ingestion/models`
-- `GET /api/ingestion/recognitions`
+- `GET /api/models`
+- `GET /api/models/{id}`
 
-Current behavior is in-memory ingestion simulation (no message broker yet).
+### 3.6 Recognition Service
 
-UML entities implemented in this service:
+Main files:
 
-- `Model`: `id`, `name`, `pt`
-- `Recognition`: `id`, `result`, `file`, `date`, `confidenceScore`, `model`, `userId`, `vioPatternId`
+- `web-service/recognition-service/src/main/java/com/vrs/recognition/controller/RecognitionController.java`
+- `web-service/recognition-service/src/main/java/com/vrs/recognition/service/RecognitionExecutionService.java`
 
-### 3.5 User Service
+Features:
+
+- `POST /api/recognitions/upload`
+- `POST /api/recognitions/execute`
+- `GET /api/recognitions`
+- `GET /api/recognitions/{id}`
+
+### 3.7 User Service
 
 Main files:
 
@@ -148,7 +160,7 @@ Security/session details in this version:
 - Default bootstrapped admin account: `admin / Admin1234`.
 - Public register endpoint always creates `USER` role (prevents privilege escalation).
 
-### 3.6 AI Inference Service
+### 3.8 AI Inference Service
 
 Main files:
 
@@ -226,7 +238,7 @@ chmod +x start.sh
 
 What `start.sh` does:
 
-- Starts `web-service/run.sh` (all 4 Java services)
+- Starts `web-service/run.sh` (all Java services)
 - Starts `ai-service`
 - Handles shutdown for all spawned processes with Ctrl+C
 
@@ -239,7 +251,7 @@ chmod +x stop.sh
 ./stop.sh
 ```
 
-Default stop ports: `8000`, `8080`, `8081`, `8082`, `8083`.
+Default stop ports: `8000`, `8080`, `8081`, `8083`, `8084`, `8085`.
 
 You can also pass custom ports:
 
@@ -267,27 +279,24 @@ uv run main.py
 
 ### 5.1 Current State
 
-Pattern, user, and video-ingestion services now use a database.
+Pattern, user, model, and recognition services use a database.
 
 Configuration files:
 
 - `web-service/pattern-service/src/main/resources/application.yml`
 - `web-service/user-service/src/main/resources/application.yml`
-- `web-service/video-ingestion-service/src/main/resources/application.yml`
+- `web-service/model-service/src/main/resources/application.yml`
+- `web-service/recognition-service/src/main/resources/application.yml`
 
-Default database is in-memory H2:
-
-- URL: `jdbc:h2:mem:patterndb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`
-- Username: `sa`
-- Password: empty
-- Driver: `org.h2.Driver`
+Default runtime configuration uses MySQL connection settings from environment variables (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DRIVER`).
 
 ### 5.2 Switch to MySQL
 
-Set environment variables before starting pattern-service:
+Set environment variables before starting services:
 
 ```bash
-export DB_URL="jdbc:mysql://localhost:3306/violence_patterns?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+export DB_HOST="127.0.0.1"
+export DB_PORT="3306"
 export DB_USERNAME="root"
 export DB_PASSWORD="your_password"
 export DB_DRIVER="com.mysql.cj.jdbc.Driver"
