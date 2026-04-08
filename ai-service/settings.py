@@ -4,6 +4,10 @@ from pathlib import Path
 PATTERN_SERVICE_URL = os.getenv("PATTERN_SERVICE_URL", "http://localhost:8081")
 DEFAULT_VIOLENCE_THRESHOLD = float(os.getenv("DEFAULT_VIOLENCE_THRESHOLD", "0.60"))
 
+MOVINET_WEIGHTS_DIR = Path(os.getenv("MOVINET_WEIGHTS_DIR", str(Path(__file__).resolve().parent / "weights"))).expanduser()
+if not MOVINET_WEIGHTS_DIR.is_absolute():
+    MOVINET_WEIGHTS_DIR = (Path(__file__).resolve().parent / MOVINET_WEIGHTS_DIR).resolve()
+
 _DEFAULT_CHECKPOINT = Path(__file__).resolve().parent / "weights" / "movinet_a0_violence.pt"
 MOVINET_CHECKPOINT_PATH = Path(
     os.getenv("MOVINET_CHECKPOINT_PATH", str(_DEFAULT_CHECKPOINT))

@@ -12,6 +12,14 @@ class InferenceRequest(BaseModel):
         default=None,
         description="Absolute/relative path to a local video file for MoViNet inference.",
     )
+    model_pt: str | None = Field(
+        default=None,
+        description="Optional weight filename or path resolved by AI service (for example movinet_a0_violence.pt).",
+    )
+    model_name: str | None = Field(
+        default=None,
+        description="Optional MoViNet variant hint (for example A0).",
+    )
 
 
 class InferenceResponse(BaseModel):

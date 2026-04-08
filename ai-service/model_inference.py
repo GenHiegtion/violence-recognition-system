@@ -14,6 +14,7 @@ from settings import (
     MOVINET_IMAGE_SIZE,
     MOVINET_MODEL_NAME,
     MOVINET_NUM_FRAMES,
+    MOVINET_WEIGHTS_DIR,
 )
 
 _KINETICS_MEAN = np.array([0.43216, 0.394666, 0.37645], dtype=np.float32)
@@ -190,12 +191,32 @@ class MoViNetBinaryInferenceEngine:
         return tensor
 
 
-@lru_cache(maxsize=1)
-def get_engine() -> MoViNetBinaryInferenceEngine:
+def _resolve_checkpoint_path(checkpoint_path: str | Path | None) -> Path:
+    if checkpoint_path is None:
+        return MOVINET_CHECKPOINT_PATH
+
+    path = Path(checkpoint_path).expanduser()
+    if path.is_absolute():
+        return path
+
+    return (MOVINET_WEIGHTS_DIR / path).resolve()
+
+
+@lru_cache(maxsize=8)
+def _get_engine_cached(checkpoint_path: str, model_name: str) -> MoViNetBinaryInferenceEngine:
     return MoViNetBinaryInferenceEngine(
-        checkpoint_path=MOVINET_CHECKPOINT_PATH,
-        model_name=MOVINET_MODEL_NAME,
+        checkpoint_path=Path(checkpoint_path),
+        model_name=model_name,
         image_size=MOVINET_IMAGE_SIZE,
         default_num_frames=MOVINET_NUM_FRAMES,
         device_name=MOVINET_DEVICE,
     )
+
+
+def get_engine(
+    checkpoint_path: str | Path | None = None,
+    model_name: str | None = None,
+) -> MoViNetBinaryInferenceEngine:
+    resolved_checkpoint = _resolve_checkpoint_path(checkpoint_path)
+    resolved_model_name = (model_name or MOVINET_MODEL_NAME).upper()
+    return _get_engine_cached(str(resolved_checkpoint), resolved_model_name)
