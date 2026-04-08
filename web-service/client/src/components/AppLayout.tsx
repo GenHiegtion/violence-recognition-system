@@ -29,28 +29,25 @@ export function AppLayout() {
           )}
 
           <nav className="top-nav" aria-label="Main navigation">
-          {isAuthenticated ? (
-            <>
-              <NavLink to="/manager-home" className={navClassName}>
-                Home
-              </NavLink>
-              <NavLink to="/patterns" className={navClassName}>
-                Violence Patterns
-              </NavLink>
-              <button className="ghost-button" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <NavLink to="/login" className={navClassName}>
-                Login
-              </NavLink>
-              <NavLink to="/register" className={navClassName}>
-                Register
-              </NavLink>
-            </>
-          )}
+            {isAuthenticated ? (
+              <>
+                <NavLink to="/manager-home" className={navClassName}>
+                  Home
+                </NavLink>
+                <button className="ghost-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className={navClassName}>
+                  Login
+                </NavLink>
+                <NavLink to="/register" className={navClassName}>
+                  Register
+                </NavLink>
+              </>
+            )}
           </nav>
         </div>
       </header>

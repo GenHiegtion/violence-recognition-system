@@ -2,7 +2,8 @@
 
 Gateway service that routes requests to downstream microservices:
 - Pattern service: `/api/patterns/**`
-- Video ingestion service: `/api/ingestion/**`
+- Model service: `/api/models/**`
+- Recognition service: `/api/recognitions/**`
 - User service: `/api/auth/**`, `/api/users/**`
 - AI inference service: `/api/ai/**`
 

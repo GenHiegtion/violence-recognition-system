@@ -7,6 +7,8 @@ import { ManagerHomePage } from './pages/ManagerHomePage'
 import { PatternDetailPage } from './pages/PatternDetailPage'
 import { PatternFormPage } from './pages/PatternFormPage'
 import { PatternManagementPage } from './pages/PatternManagementPage'
+import { RecognitionModelSelectionPage } from './pages/RecognitionModelSelectionPage'
+import { RecognitionVideoSelectionPage } from './pages/RecognitionVideoSelectionPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { StatisticsPage } from './pages/StatisticsPage'
 import { ViolenceRecognitionPage } from './pages/ViolenceRecognitionPage'
@@ -42,7 +44,10 @@ function App() {
           <Route path="/patterns/add" element={<PatternFormPage />} />
           <Route path="/patterns/:id" element={<PatternDetailPage />} />
           <Route path="/patterns/:id/edit" element={<PatternFormPage />} />
-          <Route path="/recognition" element={<ViolenceRecognitionPage />} />
+          <Route path="/recognition" element={<Navigate to="/recognition/video" replace />} />
+          <Route path="/recognition/video" element={<RecognitionVideoSelectionPage />} />
+          <Route path="/recognition/models" element={<RecognitionModelSelectionPage />} />
+          <Route path="/recognition/result" element={<ViolenceRecognitionPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
         </Route>
 

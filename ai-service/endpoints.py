@@ -1,4 +1,5 @@
 from typing import Literal
+import logging
 
 from fastapi import APIRouter
 
@@ -8,6 +9,7 @@ from schemas import InferenceRequest, InferenceResponse
 from settings import DEFAULT_VIOLENCE_THRESHOLD
 
 router = APIRouter()
+logger = logging.getLogger("uvicorn.error")
 
 
 @router.get("/health")
@@ -22,6 +24,15 @@ def health_ai() -> dict:
 
 @router.post("/api/ai/infer", response_model=InferenceResponse)
 async def infer(request: InferenceRequest) -> InferenceResponse:
+    logger.info(
+        "[OUTBOUND] ai-service infer started source_id=%s pattern_code=%s frames=%s model_pt=%s model_name=%s",
+        request.source_id,
+        request.pattern_code,
+        request.frames_count,
+        request.model_pt,
+        request.model_name,
+    )
+
     thresholds = await fetch_thresholds()
     threshold = thresholds.get(request.pattern_code.lower(), DEFAULT_VIOLENCE_THRESHOLD)
 
@@ -34,7 +45,7 @@ async def infer(request: InferenceRequest) -> InferenceResponse:
         score_source = "request"
     elif request.video_path:
         try:
-            engine = get_engine()
+            engine = get_engine(checkpoint_path=request.model_pt, model_name=request.model_name)
             output = engine.predict_video(request.video_path, request.frames_count)
             score = output.score
             model_name = output.model_name
@@ -43,12 +54,22 @@ async def infer(request: InferenceRequest) -> InferenceResponse:
             score = heuristic_score(request.frames_count)
             score_source = "heuristic"
             note = f"MoViNet fallback: {exc}"
+            logger.warning("[OUTBOUND] ai-service MoViNet fallback source_id=%s reason=%s", request.source_id, exc)
     else:
         score = heuristic_score(request.frames_count)
         score_source = "heuristic"
         note = "No video_path provided."
 
     label: Literal["Violence", "Non-violence"] = "Violence" if score >= threshold else "Non-violence"
+
+    logger.info(
+        "[OUTBOUND] ai-service infer completed source_id=%s label=%s score=%.6f threshold=%.6f source=%s",
+        request.source_id,
+        label,
+        score,
+        threshold,
+        score_source,
+    )
 
     return InferenceResponse(
         source_id=request.source_id,

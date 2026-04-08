@@ -68,7 +68,6 @@ export function PatternManagementPage() {
               Search and manage violence pattern records.
             </p>
           </div>
-          <span className="role-badge role-badge-inline">Admin</span>
         </div>
 
         {error && <p className="banner error">{error}</p>}

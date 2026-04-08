@@ -465,6 +465,18 @@ th {
   background: #081421;
 }
 
+.hidden-file-input {
+  display: none;
+}
+
+.recognition-media-panel {
+  margin-top: 0.75rem;
+}
+
+.recognition-result-grid {
+  margin-top: 1rem;
+}
+
 .page-status {
   min-height: 36vh;
   display: grid;
