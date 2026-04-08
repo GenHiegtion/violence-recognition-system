@@ -3,26 +3,28 @@
 This folder contains non-AI microservices implemented with Spring Boot:
 
 - `api-gateway` (Spring Cloud Gateway)
+- `model-service` (model catalog and weight mapping)
 - `pattern-service` (violence pattern management + confidence threshold)
-- `video-ingestion-service` (stream/file ingestion and frame extraction simulation)
+- `recognition-service` (recognition execution and result persistence)
 - `user-service` (register, login, logout, MEMBER/ADMIN authorization)
 
 ## Routing Map
 
 - Gateway: `http://localhost:8080`
 - Pattern service (direct): `http://localhost:8081`
-- Video ingestion service (direct): `http://localhost:8082`
 - User service (direct): `http://localhost:8083`
+- Model service (direct): `http://localhost:8084`
+- Recognition service (direct): `http://localhost:8085`
 
 Through gateway:
 
 - `POST /api/patterns`
 - `GET /api/patterns`
 - `GET /api/patterns/thresholds`
-- `POST /api/ingestion/upload`
-- `POST /api/ingestion/stream`
-- `GET /api/ingestion/models`
-- `GET /api/ingestion/recognitions`
+- `GET /api/models`
+- `POST /api/recognitions/upload`
+- `POST /api/recognitions/execute`
+- `GET /api/recognitions`
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
@@ -42,7 +44,8 @@ From `web-service`:
 
 ```bash
 mvn -pl pattern-service spring-boot:run
-mvn -pl video-ingestion-service spring-boot:run
+mvn -pl model-service spring-boot:run
+mvn -pl recognition-service spring-boot:run
 mvn -pl user-service spring-boot:run
 mvn -pl api-gateway spring-boot:run
 ```
