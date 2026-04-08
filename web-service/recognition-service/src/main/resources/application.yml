@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8085}
+
+spring:
+  config:
+    import: optional:file:${user.dir}/../../.env[.properties]
+  application:
+    name: recognition-service
+  servlet:
+    multipart:
+      max-file-size: ${RECOGNITION_MAX_UPLOAD_SIZE:200MB}
+      max-request-size: ${RECOGNITION_MAX_UPLOAD_SIZE:200MB}
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/vrs_recognition?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  ai-service-url: ${AI_SERVICE_URL:http://localhost:8000}
+  model-service-url: ${MODEL_SERVICE_URL:http://localhost:8084}
+  default-pattern-code: ${AI_PATTERN_CODE:violence}
+  upload-dir: ${RECOGNITION_UPLOAD_DIR:${user.dir}/../../uploads/recognition}

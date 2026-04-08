@@ -1,0 +1,29 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+spring:
+  config:
+    import: optional:file:${user.dir}/../../.env[.properties]
+  application:
+    name: model-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/vrs_model?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  ai-weights-dir: ${AI_WEIGHTS_DIR:../../ai-service/weights}
