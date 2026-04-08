@@ -21,16 +21,26 @@ spring:
             - Path=/docs/pattern/**
           filters:
             - RewritePath=/docs/pattern/?(?<segment>.*), /${segment}
-        - id: video-ingestion-service
-          uri: ${VIDEO_INGESTION_SERVICE_URL:http://localhost:8082}
+        - id: model-service
+          uri: ${MODEL_SERVICE_URL:http://localhost:8084}
           predicates:
-            - Path=/api/ingestion/**
-        - id: docs-video-ingestion-service
-          uri: ${VIDEO_INGESTION_SERVICE_URL:http://localhost:8082}
+            - Path=/api/models/**
+        - id: docs-model-service
+          uri: ${MODEL_SERVICE_URL:http://localhost:8084}
           predicates:
-            - Path=/docs/ingestion/**
+            - Path=/docs/model/**
           filters:
-            - RewritePath=/docs/ingestion/?(?<segment>.*), /${segment}
+            - RewritePath=/docs/model/?(?<segment>.*), /${segment}
+        - id: recognition-service
+          uri: ${RECOGNITION_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/recognitions/**
+        - id: docs-recognition-service
+          uri: ${RECOGNITION_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/docs/recognition/**
+          filters:
+            - RewritePath=/docs/recognition/?(?<segment>.*), /${segment}
         - id: user-service
           uri: ${USER_SERVICE_URL:http://localhost:8083}
           predicates:
@@ -53,8 +63,10 @@ springdoc:
     urls:
       - name: Pattern Service
         url: /docs/pattern/v3/api-docs
-      - name: Video Ingestion Service
-        url: /docs/ingestion/v3/api-docs
+      - name: Model Service
+        url: /docs/model/v3/api-docs
+      - name: Recognition Service
+        url: /docs/recognition/v3/api-docs
       - name: User Service
         url: /docs/user/v3/api-docs
 

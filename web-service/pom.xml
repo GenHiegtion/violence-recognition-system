@@ -18,8 +18,9 @@
 
     <modules>
         <module>api-gateway</module>
+        <module>model-service</module>
         <module>pattern-service</module>
-        <module>video-ingestion-service</module>
+        <module>recognition-service</module>
         <module>user-service</module>
     </modules>
 

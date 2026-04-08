@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEFAULT_PORTS=(8000 8080 8081 8082 8083)
+DEFAULT_PORTS=(8000 8080 8081 8083 8084 8085)
 TARGET_PORTS=("$@")
 
 if [[ ${#TARGET_PORTS[@]} -eq 0 ]]; then

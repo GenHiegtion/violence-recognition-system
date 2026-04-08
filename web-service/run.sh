@@ -109,7 +109,9 @@ trap cleanup EXIT INT TERM
 
 start_service pattern-service
 sleep 2
-start_service video-ingestion-service
+start_service model-service
+sleep 2
+start_service recognition-service
 sleep 2
 start_service user-service
 sleep 2
