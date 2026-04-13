@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from './components/AppLayout'
-import { GuestOnly, RequireAuth } from './components/RouteGuards'
+import { GuestOnly, RequireAdmin, RequireAuth } from './components/RouteGuards'
 import { useAuth } from './context/useAuth'
 import { LoginPage } from './pages/LoginPage'
 import { ManagerHomePage } from './pages/ManagerHomePage'
@@ -40,14 +40,17 @@ function App() {
 
         <Route element={<RequireAuth />}>
           <Route path="/manager-home" element={<ManagerHomePage />} />
-          <Route path="/patterns" element={<PatternManagementPage />} />
-          <Route path="/patterns/add" element={<PatternFormPage />} />
-          <Route path="/patterns/:id" element={<PatternDetailPage />} />
-          <Route path="/patterns/:id/edit" element={<PatternFormPage />} />
           <Route path="/recognition" element={<Navigate to="/recognition/video" replace />} />
           <Route path="/recognition/video" element={<RecognitionVideoSelectionPage />} />
           <Route path="/recognition/models" element={<RecognitionModelSelectionPage />} />
           <Route path="/recognition/result" element={<ViolenceRecognitionPage />} />
+        </Route>
+
+        <Route element={<RequireAdmin />}>
+          <Route path="/patterns" element={<PatternManagementPage />} />
+          <Route path="/patterns/add" element={<PatternFormPage />} />
+          <Route path="/patterns/:id" element={<PatternDetailPage />} />
+          <Route path="/patterns/:id/edit" element={<PatternFormPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
         </Route>
 
