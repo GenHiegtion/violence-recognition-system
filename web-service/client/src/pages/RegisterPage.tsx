@@ -4,6 +4,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { getErrorMessage } from '../services/http'
 
+function hasLetterAndDigit(value: string): boolean {
+  return /[A-Za-z]/.test(value) && /\d/.test(value)
+}
+
 export function RegisterPage() {
   const navigate = useNavigate()
   const { register } = useAuth()
@@ -19,12 +23,21 @@ export function RegisterPage() {
     setError('')
     setIsSubmitting(true)
 
+    const normalizedUsername = username.trim()
+    const normalizedFullName = fullName.trim()
+
+    if (!hasLetterAndDigit(password)) {
+      setError('Password must contain at least one letter and one digit.')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
-      await register({ username, fullName, password })
+      await register({ username: normalizedUsername, fullName: normalizedFullName, password })
       navigate('/login', {
         replace: true,
         state: {
-          username,
+          username: normalizedUsername,
           registered: true,
         },
       })
@@ -77,8 +90,6 @@ export function RegisterPage() {
             onChange={(event) => setPassword(event.target.value)}
             minLength={8}
             maxLength={100}
-            pattern="^(?=.*[A-Za-z])(?=.*\\d).+$"
-            title="Password must contain at least one letter and one digit"
             required
             placeholder="At least 8 characters, letters and digits"
           />

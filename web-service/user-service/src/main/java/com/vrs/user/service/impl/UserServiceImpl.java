@@ -47,6 +47,8 @@ public class UserServiceImpl implements UserService {
 
     private UserResponse createAccount(String rawUsername, String rawFullName, String plainPassword, Role role) {
         String username = rawUsername.trim().toLowerCase();
+        validatePassword(plainPassword);
+
         if (userRepository.existsByUsernameIgnoreCase(username)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
@@ -101,5 +103,14 @@ public class UserServiceImpl implements UserService {
 
     private UserResponse toResponse(User account) {
         return toUserResponse(account);
+    }
+
+    private void validatePassword(String password) {
+        boolean hasLetter = password.chars().anyMatch(Character::isLetter);
+        boolean hasDigit = password.chars().anyMatch(Character::isDigit);
+
+        if (!hasLetter || !hasDigit) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password must contain letters and digits");
+        }
     }
 }
