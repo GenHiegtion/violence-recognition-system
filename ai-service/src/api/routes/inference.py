@@ -1,12 +1,15 @@
-from typing import Literal
 import logging
+from typing import Literal
 
 from fastapi import APIRouter
 
-from model_inference import ModelUnavailableError, get_engine, heuristic_score
-from pattern_client import fetch_thresholds
-from schemas import InferenceRequest, InferenceResponse
-from settings import DEFAULT_VIOLENCE_THRESHOLD
+from src.core.settings import DEFAULT_VIOLENCE_THRESHOLD
+from src.schemas.inference import InferenceRequest
+from src.schemas.inference import InferenceResponse
+from src.services.model_inference import ModelUnavailableError
+from src.services.model_inference import get_engine
+from src.services.model_inference import heuristic_score
+from src.services.pattern_client import fetch_thresholds
 
 router = APIRouter()
 logger = logging.getLogger("uvicorn.error")

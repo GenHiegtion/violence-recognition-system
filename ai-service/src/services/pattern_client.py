@@ -1,9 +1,9 @@
-from typing import Dict
 import logging
+from typing import Dict
 
 import httpx
 
-from settings import PATTERN_SERVICE_URL
+from src.core.settings import PATTERN_SERVICE_URL
 
 logger = logging.getLogger("uvicorn.error")
 
