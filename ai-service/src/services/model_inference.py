@@ -8,14 +8,12 @@ import cv2
 import numpy as np
 import torch
 
-from settings import (
-    MOVINET_CHECKPOINT_PATH,
-    MOVINET_DEVICE,
-    MOVINET_IMAGE_SIZE,
-    MOVINET_MODEL_NAME,
-    MOVINET_NUM_FRAMES,
-    MOVINET_WEIGHTS_DIR,
-)
+from src.core.settings import MOVINET_CHECKPOINT_PATH
+from src.core.settings import MOVINET_DEVICE
+from src.core.settings import MOVINET_IMAGE_SIZE
+from src.core.settings import MOVINET_MODEL_NAME
+from src.core.settings import MOVINET_NUM_FRAMES
+from src.core.settings import MOVINET_WEIGHTS_DIR
 
 _KINETICS_MEAN = np.array([0.43216, 0.394666, 0.37645], dtype=np.float32)
 _KINETICS_STD = np.array([0.22803, 0.22145, 0.216989], dtype=np.float32)

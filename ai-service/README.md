@@ -13,12 +13,13 @@ Python microservice for `Violence` / `Non-violence` recognition.
 
 ## Main Files
 
-- `main.py`: initialize the FastAPI app and include the router.
-- `endpoints.py`: define API endpoints.
-- `model_inference.py`: loader + infer MoViNet PyTorch.
-- `pattern_client.py`: call threshold API from pattern-service.
-- `schemas.py`: request/response models.
-- `settings.py`: read environment variables.
+- `main.py`: compatibility entrypoint for local run.
+- `src/app.py`: FastAPI app, middleware, lifecycle hooks.
+- `src/api/routes/inference.py`: inference endpoints.
+- `src/services/model_inference.py`: MoViNet loader/inference.
+- `src/services/pattern_client.py`: threshold client to pattern-service.
+- `src/schemas/inference.py`: request/response schemas.
+- `src/core/settings.py`: environment configuration.
 
 ## Run Locally
 
@@ -31,7 +32,7 @@ Or:
 
 ```bash
 uv sync
-uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uv run uvicorn src.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ## Request Example
