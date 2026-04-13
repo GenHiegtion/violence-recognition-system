@@ -24,6 +24,24 @@ export function RequireAuth() {
   return <Outlet />
 }
 
+export function RequireAdmin() {
+  const { isAuthenticated, isLoading, isAdmin } = useAuth()
+
+  if (isLoading) {
+    return <FullPageStatus message="Checking permissions..." />
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/manager-home" replace />
+  }
+
+  return <Outlet />
+}
+
 export function GuestOnly() {
   const { isAuthenticated, isLoading } = useAuth()
 

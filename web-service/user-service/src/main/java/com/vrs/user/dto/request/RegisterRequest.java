@@ -1,7 +1,6 @@
 package com.vrs.user.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +23,5 @@ public class RegisterRequest {
 
     @NotBlank(message = "password is required")
     @Size(min = 8, max = 100, message = "password length must be 8-100")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "password must contain letters and digits")
     private String password;
 }

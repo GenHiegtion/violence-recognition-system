@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
 
 interface HomeFeature {
   title: string
@@ -26,17 +27,24 @@ const FEATURES: HomeFeature[] = [
 
 export function ManagerHomePage() {
   const navigate = useNavigate()
+  const { isAdmin } = useAuth()
+
+  const features = isAdmin
+    ? FEATURES
+    : FEATURES.filter((feature) => feature.to === '/recognition')
 
   return (
     <section className="manager-home">
       <article className="panel">
         <h2>Manager Home</h2>
         <p className="panel-subtitle">
-          Choose a module to continue your administrative workflow.
+          {isAdmin
+            ? 'Choose a module to continue your administrative workflow.'
+            : 'Choose a module to continue your workflow.'}
         </p>
 
         <div className="feature-grid">
-          {FEATURES.map((feature) => (
+          {features.map((feature) => (
             <button
               key={feature.to}
               type="button"
