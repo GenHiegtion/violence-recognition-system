@@ -36,21 +36,21 @@ export function RequireAdmin() {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/manager-home" replace />
+    return <Navigate to="/user-home" replace />
   }
 
   return <Outlet />
 }
 
 export function GuestOnly() {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, user } = useAuth()
 
   if (isLoading) {
     return <FullPageStatus message="Checking authentication..." />
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/manager-home" replace />
+    return <Navigate to={user?.role === 'ADMIN' ? '/manager-home' : '/user-home'} replace />
   }
 
   return <Outlet />

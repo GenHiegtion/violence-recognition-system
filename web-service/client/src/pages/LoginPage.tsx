@@ -28,8 +28,9 @@ export function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      await login({ username, password })
-      navigate('/manager-home', { replace: true })
+      const account = await login({ username, password })
+      const defaultHome = account.role === 'ADMIN' ? '/manager-home' : '/user-home'
+      navigate(state.from ?? defaultHome, { replace: true })
     } catch (err) {
       setError(getErrorMessage(err))
     } finally {

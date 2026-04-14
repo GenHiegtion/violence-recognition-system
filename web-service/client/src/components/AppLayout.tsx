@@ -8,6 +8,7 @@ function navClassName({ isActive }: { isActive: boolean }) {
 export function AppLayout() {
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
+  const homePath = user?.role === 'ADMIN' ? '/manager-home' : '/user-home'
 
   const handleLogout = async () => {
     await logout()
@@ -31,7 +32,7 @@ export function AppLayout() {
           <nav className="top-nav" aria-label="Main navigation">
             {isAuthenticated ? (
               <>
-                <NavLink to="/manager-home" className={navClassName}>
+                <NavLink to={homePath} className={navClassName}>
                   Home
                 </NavLink>
                 <button className="ghost-button" onClick={handleLogout}>
@@ -54,7 +55,7 @@ export function AppLayout() {
 
       <section className="session-ribbon">
         {isAuthenticated && user ? (
-          <p>Manager workspace ready.</p>
+          <p>{user.role === 'ADMIN' ? 'Manager workspace ready.' : 'User workspace ready.'}</p>
         ) : (
           <p>Create an account or sign in to open manager workflows.</p>
         )}
