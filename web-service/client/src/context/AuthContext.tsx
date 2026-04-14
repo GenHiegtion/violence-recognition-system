@@ -90,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await authApi.login(payload)
     persistAuth(response.token, response.user)
     setState({ token: response.token, user: response.user, isLoading: false })
+    return response.user
   }, [])
 
   const register = useCallback(async (payload: RegisterRequest) => {

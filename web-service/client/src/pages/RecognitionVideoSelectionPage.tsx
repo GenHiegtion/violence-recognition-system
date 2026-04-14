@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
 import { getErrorMessage } from '../services/http'
 import { recognitionApi } from '../services/recognitionApi'
 import type { RecognitionWorkflowState } from '../types/recognition'
@@ -12,6 +13,7 @@ interface RecognitionRouteState {
 export function RecognitionVideoSelectionPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { isAdmin } = useAuth()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const routeState = location.state as RecognitionRouteState | null
@@ -121,7 +123,7 @@ export function RecognitionVideoSelectionPage() {
           <button
             type="button"
             className="secondary-button"
-            onClick={() => navigate('/manager-home')}
+            onClick={() => navigate(isAdmin ? '/manager-home' : '/user-home')}
           >
             Back
           </button>

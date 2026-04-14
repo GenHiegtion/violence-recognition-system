@@ -11,10 +11,11 @@ import { RecognitionModelSelectionPage } from './pages/RecognitionModelSelection
 import { RecognitionVideoSelectionPage } from './pages/RecognitionVideoSelectionPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { StatisticsPage } from './pages/StatisticsPage'
+import { UserHomePage } from './pages/UserHomePage'
 import { ViolenceRecognitionPage } from './pages/ViolenceRecognitionPage'
 
 function HomeRedirect() {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, user } = useAuth()
 
   if (isLoading) {
     return (
@@ -24,7 +25,11 @@ function HomeRedirect() {
     )
   }
 
-  return <Navigate to={isAuthenticated ? '/manager-home' : '/login'} replace />
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <Navigate to={user.role === 'ADMIN' ? '/manager-home' : '/user-home'} replace />
 }
 
 function App() {
@@ -39,7 +44,7 @@ function App() {
         </Route>
 
         <Route element={<RequireAuth />}>
-          <Route path="/manager-home" element={<ManagerHomePage />} />
+          <Route path="/user-home" element={<UserHomePage />} />
           <Route path="/recognition" element={<Navigate to="/recognition/video" replace />} />
           <Route path="/recognition/video" element={<RecognitionVideoSelectionPage />} />
           <Route path="/recognition/models" element={<RecognitionModelSelectionPage />} />
@@ -47,6 +52,7 @@ function App() {
         </Route>
 
         <Route element={<RequireAdmin />}>
+          <Route path="/manager-home" element={<ManagerHomePage />} />
           <Route path="/patterns" element={<PatternManagementPage />} />
           <Route path="/patterns/add" element={<PatternFormPage />} />
           <Route path="/patterns/:id" element={<PatternDetailPage />} />

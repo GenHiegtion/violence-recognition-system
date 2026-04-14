@@ -10,7 +10,7 @@ export interface AuthState {
 export interface AuthContextValue extends AuthState {
   isAuthenticated: boolean
   isAdmin: boolean
-  login: (payload: LoginRequest) => Promise<void>
+  login: (payload: LoginRequest) => Promise<UserResponse>
   register: (payload: RegisterRequest) => Promise<UserResponse>
   logout: () => Promise<void>
   refreshProfile: () => Promise<void>
